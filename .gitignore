@@ -1,0 +1,6 @@
+node_modules/
+backend/data/analytics.db
+backend/.env
+dist/
+.DS_Store
+*.log
