@@ -1,0 +1,26 @@
+id,name,category,price
+1,"Laptop",Electronics,899.99
+2,"Phone",Electronics,599.99
+3,"Tablet",Electronics,349.99
+4,"Headphones",Electronics,149.99
+5,"Monitor",Electronics,299.99
+6,"T-Shirt",Clothing,29.99
+7,"Jeans",Clothing,59.99
+8,"Jacket",Clothing,89.99
+9,"Dress",Clothing,79.99
+10,"Sneakers",Clothing,119.99
+11,"Coffee Beans",Food,24.99
+12,"Protein Bar",Food,3.99
+13,"Olive Oil",Food,14.99
+14,"Pasta",Food,4.99
+15,"Chocolate",Food,9.99
+16,"Office Chair",Furniture,249.99
+17,"Desk",Furniture,399.99
+18,"Bookshelf",Furniture,149.99
+19,"Sofa",Furniture,799.99
+20,"Lamp",Furniture,59.99
+21,"Running Shoes",Sports,129.99
+22,"Yoga Mat",Sports,39.99
+23,"Dumbbells",Sports,79.99
+24,"Bicycle",Sports,499.99
+25,"Backpack",Sports,69.99
