@@ -19,6 +19,14 @@ body {
   min-height: 100vh;
 }
 
+button { font-family: inherit; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--surface); }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+@media (max-width: 640px) {
+  .main-content { padding: 0 1rem 2rem !important; }
+  .query-container { padding: 1.25rem 1rem !important; }
+}
