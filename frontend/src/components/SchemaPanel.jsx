@@ -1,26 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import { fetchSchema } from '../services/api';
 
-export default function SchemaPanel() {
+export default function SchemaPanel({ activeDataset }) {
   const [schema, setSchema] = useState(null);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    fetchSchema().then(setSchema).catch(() => {});
-  }, []);
+    if (!activeDataset) {
+      fetchSchema().then(setSchema).catch(() => {});
+    }
+  }, [activeDataset]);
 
-  if (!schema) return null;
+  const tables = activeDataset
+    ? [{
+        name: activeDataset.fileName,
+        rowCount: activeDataset.rowCount,
+        columns: activeDataset.columns.map(c => ({
+          column_name: c.column_name,
+          data_type: c.data_type,
+          is_nullable: 'YES',
+        })),
+      }]
+    : schema?.tables || [];
+
+  if (!tables.length) return null;
 
   return (
     <div style={styles.container}>
       <button style={styles.toggle} onClick={() => setOpen(o => !o)}>
         <span style={styles.dbIcon}>⬡</span>
-        Database Schema
+        {activeDataset ? 'Uploaded Dataset Schema' : 'Database Schema'}
         <span style={styles.arrow}>{open ? '▲' : '▼'}</span>
       </button>
       {open && (
         <div style={styles.panel}>
-          {schema.tables.map(t => (
+          {tables.map(t => (
             <div key={t.name} style={styles.table}>
               <div style={styles.tableName}>
                 <span>▤</span> {t.name}
@@ -43,7 +57,7 @@ export default function SchemaPanel() {
 }
 
 const styles = {
-  container: { maxWidth: 900, margin: '0 auto', padding: '0 2rem 1rem' },
+  container: { marginBottom: '0.5rem' },
   toggle: { width: '100%', background: '#1a1d27', border: '1px solid #2d3148', borderRadius: 10, padding: '0.65rem 1rem', color: '#8892b0', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontFamily: 'inherit' },
   dbIcon: { color: '#6c63ff' },
   arrow: { marginLeft: 'auto' },

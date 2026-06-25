@@ -4,6 +4,7 @@ import SQLPreview from './components/SQLPreview';
 import ChartView from './components/ChartView';
 import ResultTable from './components/ResultTable';
 import SchemaPanel from './components/SchemaPanel';
+import DatasetUpload from './components/DatasetUpload';
 import { runQuery } from './services/api';
 
 export default function App() {
@@ -11,13 +12,14 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [history, setHistory] = useState([]);
+  const [activeDataset, setActiveDataset] = useState(null);
 
   async function handleQuery(question) {
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const data = await runQuery(question);
+      const data = await runQuery(question, activeDataset?.tableId || null);
       setResult({ question, ...data });
       setHistory(h => [{ question, rowCount: data.rowCount }, ...h].slice(0, 8));
     } catch (err) {
@@ -31,10 +33,21 @@ export default function App() {
     }
   }
 
+  function handleDatasetChange(dataset) {
+    setActiveDataset(dataset);
+    setResult(null);
+    setError(null);
+    setHistory([]);
+  }
+
   function handleClear() {
     setResult(null);
     setError(null);
   }
+
+  const datasetLabel = activeDataset
+    ? activeDataset.fileName
+    : 'Sales dataset (3,000 orders)';
 
   return (
     <div style={styles.root}>
@@ -46,12 +59,22 @@ export default function App() {
         .history-btn:hover { border-color: #6c63ff !important; }
         @media (max-width: 640px) {
           .main-content { padding: 0 1rem 2rem !important; }
-          .query-container { padding: 1.25rem 1rem !important; }
         }
       `}</style>
 
       <QueryInput onQuery={handleQuery} loading={loading} />
-      <SchemaPanel />
+
+      <div style={styles.panels}>
+        <SchemaPanel activeDataset={activeDataset} />
+
+        <div style={styles.uploadSection}>
+          <div style={styles.sectionLabel}>
+            <span style={styles.datasetDot} />
+            Active: <strong style={{ color: '#e2e8f0', marginLeft: 4 }}>{datasetLabel}</strong>
+          </div>
+          <DatasetUpload activeDataset={activeDataset} onDatasetChange={handleDatasetChange} />
+        </div>
+      </div>
 
       <div style={styles.main} className="main-content">
         {loading && (
@@ -96,8 +119,10 @@ export default function App() {
         {!loading && !result && !error && history.length === 0 && (
           <div style={styles.emptyState}>
             <div style={styles.emptyIcon}>◈</div>
-            <div style={styles.emptyTitle}>Ask anything about your sales data</div>
-            <div style={styles.emptySubtitle}>Powered by GPT-4o · PostgreSQL · 3,000+ orders across 2 years</div>
+            <div style={styles.emptyTitle}>
+              {activeDataset ? `Ask anything about "${activeDataset.fileName}"` : 'Ask anything about your sales data'}
+            </div>
+            <div style={styles.emptySubtitle}>Powered by GPT-4o · PostgreSQL · {activeDataset ? `${activeDataset.rowCount.toLocaleString()} rows` : '3,000+ orders across 2 years'}</div>
           </div>
         )}
 
@@ -119,7 +144,11 @@ export default function App() {
 
 const styles = {
   root: { minHeight: '100vh', background: '#0f1117' },
-  main: { maxWidth: 900, margin: '0 auto', padding: '0 2rem 3rem' },
+  panels: { maxWidth: 900, margin: '0 auto', padding: '0 2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' },
+  uploadSection: { background: '#1a1d27', border: '1px solid #2d3148', borderRadius: 10, padding: '0.75rem 1rem' },
+  sectionLabel: { fontSize: '0.78rem', color: '#8892b0', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' },
+  datasetDot: { width: 7, height: 7, borderRadius: '50%', background: '#4ade80', display: 'inline-block' },
+  main: { maxWidth: 900, margin: '0 auto', padding: '1.5rem 2rem 3rem' },
   loadingBox: { display: 'flex', alignItems: 'center', gap: '1rem', background: '#1a1d27', border: '1px solid #2d3148', borderRadius: 12, padding: '1.5rem', marginBottom: '1rem' },
   loadingSpinner: { width: 36, height: 36, borderRadius: '50%', border: '3px solid #2d3148', borderTop: '3px solid #6c63ff', animation: 'spin 0.8s linear infinite', flexShrink: 0 },
   loadingTitle: { fontWeight: 600, marginBottom: 4 },
