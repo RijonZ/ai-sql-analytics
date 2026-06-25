@@ -5,7 +5,7 @@ import ChartView from './components/ChartView';
 import ResultTable from './components/ResultTable';
 import SchemaPanel from './components/SchemaPanel';
 import DatasetUpload from './components/DatasetUpload';
-import { runQuery } from './services/api';
+import { runQuery, fetchSuggestions } from './services/api';
 
 export default function App() {
   const [loading, setLoading] = useState(false);
@@ -13,6 +13,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [history, setHistory] = useState([]);
   const [activeDataset, setActiveDataset] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
 
   async function handleQuery(question) {
     setLoading(true);
@@ -33,11 +34,21 @@ export default function App() {
     }
   }
 
-  function handleDatasetChange(dataset) {
+  async function handleDatasetChange(dataset) {
     setActiveDataset(dataset);
     setResult(null);
     setError(null);
     setHistory([]);
+    if (dataset) {
+      try {
+        const s = await fetchSuggestions(dataset.columns, dataset.fileName);
+        setSuggestions(s);
+      } catch (_) {
+        setSuggestions([]);
+      }
+    } else {
+      setSuggestions([]);
+    }
   }
 
   function handleClear() {
@@ -62,7 +73,7 @@ export default function App() {
         }
       `}</style>
 
-      <QueryInput onQuery={handleQuery} loading={loading} />
+      <QueryInput onQuery={handleQuery} loading={loading} suggestions={suggestions} />
 
       <div style={styles.panels}>
         <SchemaPanel activeDataset={activeDataset} />

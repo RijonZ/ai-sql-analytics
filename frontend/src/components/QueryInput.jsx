@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const SUGGESTIONS = [
+const DEFAULT_SUGGESTIONS = [
   'What were total sales last month?',
   'Show me top 5 products by revenue this year',
   'How many orders per region in 2025?',
@@ -11,8 +11,10 @@ const SUGGESTIONS = [
   'Show daily sales for the last 30 days',
 ];
 
-export default function QueryInput({ onQuery, loading }) {
+export default function QueryInput({ onQuery, loading, suggestions }) {
   const [value, setValue] = useState('');
+
+  const activeSuggestions = suggestions && suggestions.length > 0 ? suggestions : DEFAULT_SUGGESTIONS;
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -39,7 +41,7 @@ export default function QueryInput({ onQuery, loading }) {
             type="text"
             value={value}
             onChange={e => setValue(e.target.value)}
-            placeholder="e.g. What were total sales last month?"
+            placeholder={suggestions?.length ? 'Ask a question about your dataset...' : 'e.g. What were total sales last month?'}
             disabled={loading}
             autoFocus
           />
@@ -50,8 +52,8 @@ export default function QueryInput({ onQuery, loading }) {
       </form>
 
       <div style={styles.suggestions}>
-        {SUGGESTIONS.map(s => (
-          <button key={s} style={styles.chip} onClick={() => handleSuggestion(s)} disabled={loading}>
+        {activeSuggestions.map(s => (
+          <button key={s} style={styles.chip} className="chip-btn" onClick={() => handleSuggestion(s)} disabled={loading}>
             {s}
           </button>
         ))}
@@ -68,25 +70,9 @@ const styles = {
   form: { marginBottom: '1rem' },
   inputWrapper: { display: 'flex', gap: '0.5rem', background: '#1a1d27', border: '1px solid #2d3148', borderRadius: 12, padding: '0.25rem 0.5rem', alignItems: 'center' },
   inputIcon: { color: '#6c63ff', fontWeight: 700, fontSize: '1.2rem', padding: '0 0.5rem' },
-  input: {
-    flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#e2e8f0',
-    fontSize: '1rem', padding: '0.75rem 0.5rem', fontFamily: 'inherit',
-  },
-  button: {
-    background: '#6c63ff', color: '#fff', border: 'none', borderRadius: 8,
-    padding: '0.6rem 1.2rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
-    whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6,
-    opacity: 1, transition: 'opacity 0.2s',
-  },
-  spinner: {
-    display: 'inline-block', width: 16, height: 16,
-    border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff',
-    borderRadius: '50%', animation: 'spin 0.8s linear infinite',
-  },
+  input: { flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#e2e8f0', fontSize: '1rem', padding: '0.75rem 0.5rem', fontFamily: 'inherit' },
+  button: { background: '#6c63ff', color: '#fff', border: 'none', borderRadius: 8, padding: '0.6rem 1.2rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 6 },
+  spinner: { display: 'inline-block', width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' },
   suggestions: { display: 'flex', flexWrap: 'wrap', gap: '0.5rem' },
-  chip: {
-    background: '#21253a', border: '1px solid #2d3148', borderRadius: 20,
-    padding: '0.35rem 0.85rem', color: '#8892b0', cursor: 'pointer',
-    fontSize: '0.8rem', transition: 'all 0.15s',
-  },
+  chip: { background: '#21253a', border: '1px solid #2d3148', borderRadius: 20, padding: '0.35rem 0.85rem', color: '#8892b0', cursor: 'pointer', fontSize: '0.8rem', transition: 'all 0.15s' },
 };

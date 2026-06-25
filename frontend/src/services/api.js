@@ -24,3 +24,8 @@ export async function uploadDataset(file) {
 export async function deleteDataset(tableId) {
   await api.delete(`/upload/${tableId}`);
 }
+
+export async function fetchSuggestions(columns, fileName) {
+  const { data } = await api.post('/suggestions', { columns, fileName });
+  return data.suggestions;
+}

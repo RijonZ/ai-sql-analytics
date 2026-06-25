@@ -12,5 +12,6 @@ app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().
 app.use('/api/query', require('./routes/query'));
 app.use('/api/schema', require('./routes/schema'));
 app.use('/api/upload', require('./routes/upload'));
+app.use('/api/suggestions', require('./routes/suggestions'));
 
 app.listen(PORT, () => console.log(`Backend running on http://localhost:${PORT}`));
